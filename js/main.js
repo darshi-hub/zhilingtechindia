@@ -179,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (nameInput.value.trim() !== '' && emailInput.value.trim() !== '') {
         contactForm.style.display = 'none';
         if (formSuccessMessage) formSuccessMessage.style.display = 'block';
-        localStorage.setItem('contactFormSubmitted', 'true');
         window.location.href = '../pricelists/index.html';
       } else {
         alert('Please fill all the fields.');
