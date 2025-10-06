@@ -180,9 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
         contactForm.style.display = 'none';
         if (formSuccessMessage) formSuccessMessage.style.display = 'block';
         localStorage.setItem('contactFormSubmitted', 'true');
-        window.location.href = 'pricelists.html';
+        window.location.href = '../pricelists/index.html';
       } else {
-        alert('Please fill in your name and email to proceed.');
+        alert('Please fill all the fields.');
       }
     });
   }
