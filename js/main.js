@@ -161,32 +161,31 @@ document.addEventListener('DOMContentLoaded', () => {
     fabTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 
-  // --- One-Time Contact Form Logic with Redirect ---
-  const contactForm = document.getElementById('contactForm');
-  const formSuccessMessage = document.getElementById('formSuccessMessage');
+// --- Contact Form Logic: Success Message 5s, Redirect, Always Fillable ---
+const contactForm = document.getElementById('contactForm');
+const formSuccessMessage = document.getElementById('formSuccessMessage');
 
-  if (contactForm) {
-    if (localStorage.getItem('contactFormSubmitted') === 'true') {
+if (contactForm) {
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameInput = contactForm.querySelector('input[name="name"]');
+    const emailInput = contactForm.querySelector('input[name="email"]');
+
+    if (nameInput.value.trim() !== '' && emailInput.value.trim() !== '') {
       contactForm.style.display = 'none';
-      if (formSuccessMessage) formSuccessMessage.style.display = 'block';
-    }
-
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const nameInput = contactForm.querySelector('input[name="name"]');
-      const emailInput = contactForm.querySelector('input[name="email"]');
-
-      if (nameInput.value.trim() !== '' && emailInput.value.trim() !== '') {
-        contactForm.style.display = 'none';
-        if (formSuccessMessage) formSuccessMessage.style.display = 'block';
-        localStorage.setItem('contactFormSubmitted', 'true');
-        window.location.href = 'pricelists.html';
-      } else {
-        alert('Please fill in your name and email to proceed.');
+      if (formSuccessMessage) {
+        formSuccessMessage.style.display = 'block';
+        setTimeout(() => {
+          formSuccessMessage.style.display = 'none';
+          // Redirect to the directory so only '/pricelists/' shows in the URL
+          window.location.href = '../pricelists/';
+        }, 5000);
       }
-    });
-  }
-
+    } else {
+      alert('Please fill all the fields.');
+    }
+  });
+}
   // --- Set current year in footer ---
   const yearSpan = document.getElementById('year');
   if (yearSpan) {
