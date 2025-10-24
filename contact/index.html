@@ -6,70 +6,6 @@
   <title>Contact Us | ZHLING TECH INDIA PVT. LTD.</title>
   <meta name="description" content="Request proposals, datasheets, and support. We are based in New Delhi, India." />
   <link rel="stylesheet" href="../css/style.css" />
-<script>
-document.getElementById("contactForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const form = e.target;
-    const name = form.name.value.trim();
-    const email = form.email.value.trim();
-    const phone = form.phone.value.trim();
-    const company = form.company.value.trim();
-    const message = form.message.value.trim();
-
-    let errors = [];
-
-    // Basic presence check
-    if (!name || !email || !phone || !company || !message) {
-        errors.push("All fields are required.");
-    }
-
-    // Format checks
-    const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-    if (!emailPattern.test(email)) {
-        errors.push("Invalid email format.");
-    }
-
-    const phonePattern = /^\+?[1-9]\d{6,14}$/;
-    if (!phonePattern.test(phone)) {
-        errors.push("Invalid international phone number format.");
-    }
-
-    const companyPattern = /^[a-zA-Z0-9\s\.\-&]{2,}$/;
-    if (!companyPattern.test(company)) {
-        errors.push("Invalid company name.");
-    }
-
-    if (errors.length > 0) {
-        alert(errors.join("\n"));
-        return;
-    }
-
-    try {
-        // Real-world email verification
-        const emailRes = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=e2af50e3ae754a969c3940bc3fec0dbe&email=${email}`);
-        const emailData = await emailRes.json();
-        if (emailData.deliverability !== "DELIVERABLE") {
-            alert("Email address is not deliverable or may not exist.");
-            return;
-        }
-
-        // Real-world phone verification
-        const phoneRes = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=270adeddc91f405788d0ae9a512deac9&phone=${phone}`);
-        const phoneData = await phoneRes.json();
-        if (!phoneData.valid || phoneData.line_type !== "mobile") {
-            alert("Phone number is not valid or not a mobile line.");
-            return;
-        }
-
-        // All checks passed — submit the form
-        form.submit();
-    } catch (err) {
-        console.error("Verification error:", err);
-        alert("Verification failed due to a network or API error.");
-    }
-});
-</script>
 </head>
 <body>
   <!-- Header -->
@@ -110,7 +46,7 @@ document.getElementById("contactForm").addEventListener("submit", async function
         <div class="grid two">
             <div id="contactFormWrapper" class="content-box">
                 <!-- Form State -->
-                <form id="contactForm" class="form" novalidate>
+                <form id="contactForm" class="form" action="https://httpbin.org/post" method="POST" novalidate>
                     <h2>Request a Proposal</h2>
                     <div class="form-grid">
                         <label>Full Name <input type="text" name="name" required /></label>
@@ -125,7 +61,7 @@ document.getElementById("contactForm").addEventListener("submit", async function
                 <!-- Success Message State -->
                 <div id="formSuccessMessage" style="display: none; text-align: center;">
                     <h2>Thank You!</h2>
-                    <p>We have received your response. Thank you for choosing us! YOU ARE NOW BEING REDIRECTED TO THE PRICELISTS PAGE. IT WILL TAKE MAXIMUM 10 SECONDS. IF IT DOESN'T GET REDIRECTED <a href="zhlingtech.in/pricelists/">CLICK HERE</a> KINDLY DOWNLOAD THE NEEDED PRICELISTS FROM THAT.</p>
+                    <p>We have received your response. Thank you for choosing us! You are now being redirected to our Pricelists page where you can download the relevant documents. If the page does not redirect automatically, <a href="zhlingtech.in/pricelists/" class="btn btn-secondary">CLICK HERE</a>.</p>
                 </div>
             </div>
             <div class="content-box contact-info-panel">

@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("contactForm");
+  const successMsg = document.getElementById("formSuccessMessage");
+  if (!form) return; // Prevent errors if form is not present
 
   form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+    e.preventDefault(); // Always prevent default submit
 
     const name = form.name.value.trim();
     const email = form.email.value.trim();
@@ -10,48 +12,87 @@ document.addEventListener("DOMContentLoaded", () => {
     const company = form.company.value.trim();
     const message = form.message.value.trim();
 
-    let errors = [];
-
+    // --- Client-side validation ---
     if (!name || !email || !phone || !company || !message) {
-      errors.push("All fields are required.");
+      alert("Please fill all fields.");
+      return;
     }
-
     const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     if (!emailPattern.test(email)) {
-      errors.push("Invalid email format.");
+      alert("Please enter a valid email address.");
+      return;
     }
-
     const phonePattern = /^\+?[1-9]\d{6,14}$/;
     if (!phonePattern.test(phone)) {
-      errors.push("Invalid international phone number format.");
-    }
-
-    if (errors.length > 0) {
-      alert(errors.join("\n"));
+      alert("Please enter a valid phone number.");
       return;
     }
 
+    /*
+    // --- Email API validation (DISABLED due to 401 Unauthorized errors) ---
     try {
-      const emailRes = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=e2af50e3ae754a969c3940bc3fec0dbe&email=${email}`);
+      const emailRes = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=YOUR_API_KEY&email=${encodeURIComponent(email)}`);
       const emailData = await emailRes.json();
-      if (emailData.deliverability !== "DELIVERABLE") {
-        alert("Email is not deliverable.");
+      if (
+        emailData &&
+        typeof emailData.deliverability !== "undefined" &&
+        emailData.deliverability !== "DELIVERABLE" &&
+        emailData.deliverability !== "UNKNOWN" &&
+        emailData.deliverability !== "RISKY"
+      ) {
+        alert("Email address could not be verified.");
         return;
       }
-
-      const phoneRes = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=270adeddc91f405788d0ae9a512deac9&phone=${phone}`);
-      const phoneData = await phoneRes.json();
-      if (!phoneData.valid || phoneData.line_type !== "mobile") {
-        alert("Phone number is not valid or not a mobile line.");
-        return;
-      }
-
-      // ✅ All checks passed — simulate success
-      alert("Form submitted successfully!");
-      window.location.href = "https://zhlingtech.in/pricelists/";
     } catch (err) {
-      console.error("Verification error:", err);
-      alert("Verification failed due to a network or API error.");
+      // Fail silently, continue
+    }
+
+    // --- Phone API validation (DISABLED due to 401 Unauthorized errors) ---
+    try {
+      const phoneRes = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=YOUR_API_KEY&phone=${encodeURIComponent(phone)}`);
+      const phoneData = await phoneRes.json();
+      if (
+        phoneData &&
+        typeof phoneData.valid !== "undefined" &&
+        (!phoneData.valid || phoneData.line_type !== "mobile")
+      ) {
+        alert("Phone number could not be verified.");
+        return;
+      }
+    } catch (err) {
+      // Fail silently, continue
+    }
+    */
+
+    // --- Submit via AJAX ---
+    try {
+      let endpoint = form.action && form.action !== "#" ? form.action : "https://httpbin.org/post";
+      const formData = new FormData(form);
+      const response = await fetch(endpoint, {
+        method: form.method || "POST",
+        body: formData,
+        headers: {
+            'Accept': 'application/json'
+        }
+      });
+      if (response.ok) {
+        // Hide form, show success message, redirect after 5s
+        form.style.display = "none";
+        if (successMsg) {
+          successMsg.style.display = "block";
+        }
+        setTimeout(() => {
+          window.location.href = 'https://zhlingtech.in/pricelists/';
+        }, 5000);
+      } else {
+        // This runs if the server responds with an error (e.g., 404, 500)
+        alert('Submission failed.');
+        console.error("Server Error:", response.status, response.statusText, await response.text());
+      }
+    } catch (err) {
+      // This runs if there's a network error (e.g., no internet, CORS issue)
+      alert('A network error occurred. Please check your connection and try again.');
+      console.error("Network or Fetch Error:", err);
     }
   });
 });
