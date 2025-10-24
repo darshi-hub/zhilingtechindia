@@ -6,9 +6,9 @@
   <title>Contact Us | ZHLING TECH INDIA PVT. LTD.</title>
   <meta name="description" content="Request proposals, datasheets, and support. We are based in New Delhi, India." />
   <link rel="stylesheet" href="../css/style.css" />
-  <script>
+<script>
 document.getElementById("contactForm").addEventListener("submit", async function (e) {
-    e.preventDefault(); // Hold submission until checks pass
+    e.preventDefault();
 
     const form = e.target;
     const name = form.name.value.trim();
@@ -24,19 +24,17 @@ document.getElementById("contactForm").addEventListener("submit", async function
         errors.push("All fields are required.");
     }
 
-    // Email format check
+    // Format checks
     const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     if (!emailPattern.test(email)) {
         errors.push("Invalid email format.");
     }
 
-    // Phone format check (international)
     const phonePattern = /^\+?[1-9]\d{6,14}$/;
     if (!phonePattern.test(phone)) {
         errors.push("Invalid international phone number format.");
     }
 
-    // Company name check
     const companyPattern = /^[a-zA-Z0-9\s\.\-&]{2,}$/;
     if (!companyPattern.test(company)) {
         errors.push("Invalid company name.");
@@ -47,24 +45,29 @@ document.getElementById("contactForm").addEventListener("submit", async function
         return;
     }
 
-    // ✅ Real-world email verification
-    const emailRes = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=e2af50e3ae754a969c3940bc3fec0dbe&email=${email}`);
-    const emailData = await emailRes.json();
-    if (emailData.deliverability !== "DELIVERABLE") {
-        alert("Email address is not deliverable or may not exist.");
-        return;
-    }
+    try {
+        // Real-world email verification
+        const emailRes = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=e2af50e3ae754a969c3940bc3fec0dbe&email=${email}`);
+        const emailData = await emailRes.json();
+        if (emailData.deliverability !== "DELIVERABLE") {
+            alert("Email address is not deliverable or may not exist.");
+            return;
+        }
 
-    // ✅ Real-world phone verification
-    const phoneRes = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=270adeddc91f405788d0ae9a512deac9&phone=${phone}`);
-    const phoneData = await phoneRes.json();
-    if (!phoneData.valid || phoneData.line_type !== "mobile") {
-        alert("Phone number is not valid or not a mobile line.");
-        return;
-    }
+        // Real-world phone verification
+        const phoneRes = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=270adeddc91f405788d0ae9a512deac9&phone=${phone}`);
+        const phoneData = await phoneRes.json();
+        if (!phoneData.valid || phoneData.line_type !== "mobile") {
+            alert("Phone number is not valid or not a mobile line.");
+            return;
+        }
 
-    // ✅ All checks passed — submit the form
-    form.submit();
+        // All checks passed — submit the form
+        form.submit();
+    } catch (err) {
+        console.error("Verification error:", err);
+        alert("Verification failed due to a network or API error.");
+    }
 });
 </script>
 </head>
