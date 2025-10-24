@@ -46,10 +46,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // ✅ All checks passed
-      form.submit(); // or send via fetch if using API
-      alert("Form submitted successfully!");
-      window.location.href = "https://zhlingtech.in/pricelists/";
+      // ✅ Simulate form submission via fetch (replace with your endpoint)
+      const response = await fetch("https://your-form-endpoint.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, company, message })
+      });
+
+      if (response.ok) {
+        alert("Form submitted successfully!");
+        window.location.href = "https://zhlingtech.in/pricelists/";
+      } else {
+        alert("Submission failed. Please try again.");
+      }
     } catch (err) {
       console.error("Verification error:", err);
       alert("Verification failed due to a network or API error.");
